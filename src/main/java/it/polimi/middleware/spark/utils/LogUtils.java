@@ -1,4 +1,4 @@
-package it.polimi.middleware.spark.tutorial.utils;
+package it.polimi.middleware.spark.utils;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
