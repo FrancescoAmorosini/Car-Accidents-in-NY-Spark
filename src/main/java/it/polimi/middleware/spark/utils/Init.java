@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.spark.sql.functions.*;
+import org.apache.spark.sql.expressions.*;
 import org.apache.spark.sql.types.StructType;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.StructField;
@@ -94,25 +95,48 @@ public class Init {
 		final Dataset<Row> ds_cause1 = ds
 		.groupBy(ds.col("CONTRIBUTING FACTOR VEHICLE 1"), 
 				ds.col("UNIQUE KEY"))
-		.sum("TOTAL_KILLED");
+		.sum("TOTAL_KILLED")
+		.filter(ds.col("CONTRIBUTING FACTOR VEHICLE 1").isNotNull())
+		.withColumnRenamed("CONTRIBUTING FACTOR VEHICLE 1", "CONTRIBUTING FACTOR");
 		final Dataset<Row> ds_cause2 = ds
 		.groupBy(ds.col("CONTRIBUTING FACTOR VEHICLE 2"), 
 				ds.col("UNIQUE KEY"))
-		.sum("TOTAL_KILLED");
+		.sum("TOTAL_KILLED")
+		.filter(ds.col("CONTRIBUTING FACTOR VEHICLE 2").isNotNull())
+		.withColumnRenamed("CONTRIBUTING FACTOR VEHICLE 2", "CONTRIBUTING FACTOR");
 		final Dataset<Row> ds_cause3 = ds
 		.groupBy(ds.col("CONTRIBUTING FACTOR VEHICLE 3"), 
 				ds.col("UNIQUE KEY"))
-		.sum("TOTAL_KILLED");
+		.sum("TOTAL_KILLED")
+		.filter(ds.col("CONTRIBUTING FACTOR VEHICLE 3").isNotNull())
+		.withColumnRenamed("CONTRIBUTING FACTOR VEHICLE 3", "CONTRIBUTING FACTOR");
 		final Dataset<Row> ds_cause4 = ds
 		.groupBy(ds.col("CONTRIBUTING FACTOR VEHICLE 4"), 
 				ds.col("UNIQUE KEY"))
-		.sum("TOTAL_KILLED");
+		.sum("TOTAL_KILLED")
+		.filter(ds.col("CONTRIBUTING FACTOR VEHICLE 4").isNotNull())
+		.withColumnRenamed("CONTRIBUTING FACTOR VEHICLE 4", "CONTRIBUTING FACTOR");
 		final Dataset<Row> ds_cause5 = ds
 		.groupBy(ds.col("CONTRIBUTING FACTOR VEHICLE 5"), 
 				ds.col("UNIQUE KEY"))
-		.sum("TOTAL_KILLED");
+		.sum("TOTAL_KILLED")
+		.filter(ds.col("CONTRIBUTING FACTOR VEHICLE 5").isNotNull())
+		.withColumnRenamed("CONTRIBUTING FACTOR VEHICLE 5", "CONTRIBUTING FACTOR");
 
-		ds_cause1.show();
+		Dataset<Row> ds_all_causes = ds_cause1.union(ds_cause2).union(ds_cause3).union(ds_cause4).union(ds_cause5).dropDuplicates()
+		.withColumn("IS_LETHAL", col("sum(TOTAL_KILLED)").gt(0));
+
+		Dataset<Row> ds_count_causes = ds_all_causes
+		.groupBy(ds_all_causes.col("CONTRIBUTING FACTOR"))
+		.agg(sum("sum(TOTAL_KILLED)"), count("UNIQUE KEY"),
+		count(col("IS_LETHAL").equalTo(true)))
+		.withColumnRenamed("sum(sum(TOTAL_KILLED))", "TOTAL_KILLED")
+		.withColumnRenamed("count(UNIQUE KEY)", "TOTAL_ACCIDENTS")
+		.withColumnRenamed("count((IS_LETHAL = true))", "LETHAL_ACCIDENTS")
+		.withColumn("%LETHAL", expr("LETHAL_ACCIDENTS / TOTAL_ACCIDENTS"));
+
+		//ds_all_causes.show(30, false);
+		ds_count_causes.show(30, false);
 		return ds;
 	}
 }
