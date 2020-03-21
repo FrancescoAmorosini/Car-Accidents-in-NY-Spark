@@ -7,6 +7,7 @@ import static org.apache.spark.sql.functions.*;
 import org.apache.spark.sql.expressions.*;
 import org.apache.spark.sql.types.StructType;
 import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.IntegerType;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -124,18 +125,17 @@ public class Init {
 		.withColumnRenamed("CONTRIBUTING FACTOR VEHICLE 5", "CONTRIBUTING FACTOR");
 
 		Dataset<Row> ds_all_causes = ds_cause1.union(ds_cause2).union(ds_cause3).union(ds_cause4).union(ds_cause5).dropDuplicates()
-		.withColumn("IS_LETHAL", col("sum(TOTAL_KILLED)").gt(0));
+		.withColumn("IS_LETHAL", col("sum(TOTAL_KILLED)").gt(0).cast(DataTypes.IntegerType));
 
 		Dataset<Row> ds_count_causes = ds_all_causes
 		.groupBy(ds_all_causes.col("CONTRIBUTING FACTOR"))
 		.agg(sum("sum(TOTAL_KILLED)"), count("UNIQUE KEY"),
-		count(col("IS_LETHAL").equalTo(true)))
+		sum("IS_LETHAL"))
 		.withColumnRenamed("sum(sum(TOTAL_KILLED))", "TOTAL_KILLED")
 		.withColumnRenamed("count(UNIQUE KEY)", "TOTAL_ACCIDENTS")
-		.withColumnRenamed("count((IS_LETHAL = true))", "LETHAL_ACCIDENTS")
-		.withColumn("%LETHAL", expr("LETHAL_ACCIDENTS / TOTAL_ACCIDENTS"));
+		.withColumnRenamed("sum(IS_LETHAL)", "LETHAL_ACCIDENTS")
+		.withColumn("%LETHAL", format_number(expr("LETHAL_ACCIDENTS / TOTAL_ACCIDENTS"),5));
 
-		//ds_all_causes.show(30, false);
 		ds_count_causes.show(30, false);
 		return ds;
 	}

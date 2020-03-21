@@ -34,7 +34,7 @@ public class CarAccidents {
 		corrected_ds.printSchema();
 
 		//Q1 Number of lethal accidents per week throughout the entire dataset
-		//Init.first_query(corrected_ds);
+		Init.first_query(corrected_ds);
 		//Q2 Number of accidents and percentage of number of deaths per contributing factor in the dataset.
 		Init.second_query(corrected_ds);
 		spark.close();
