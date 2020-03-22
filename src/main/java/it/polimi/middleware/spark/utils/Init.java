@@ -86,7 +86,7 @@ public class Init {
 				.groupBy("YEAR", "WEEK").sum("IS_LETHAL")
 				.withColumnRenamed("sum(IS_LETHAL)", "LETHAL_ACCIDENTS");
 
-		ds_lethal_per_week.show();
+		ds_lethal_per_week.show(30, true);
 		return ds_lethal_per_week;
 	}
 
@@ -135,7 +135,7 @@ public class Init {
 				.withColumnRenamed("sum(IS_LETHAL)", "LETHAL_ACCIDENTS")
 				.withColumn("%LETHAL", format_number(expr("LETHAL_ACCIDENTS / TOTAL_ACCIDENTS"),2));
 
-		ds_count_causes.show(30, true);
+		ds_count_causes.show(50, true);
 		return ds;
 	}
 
@@ -155,8 +155,7 @@ public class Init {
 				.withColumnRenamed("sum(IS_LETHAL)", "LETHAL_ACCIDENTS")
 				.withColumnRenamed("avg(IS_LETHAL)", "AVG_LETHAL_ACCIDENTS");
 
-		//ds_all_causes.show(30, false);
-		ds_lethal_per_week.orderBy(ds_lethal_per_week.col("YEAR").asc(), ds_lethal_per_week.col("WEEK").asc()).show(30, true);
+		ds_lethal_per_week.orderBy(ds_lethal_per_week.col("YEAR").asc(), ds_lethal_per_week.col("WEEK").asc()).show(50, true);
 		return ds;
 	}
 }

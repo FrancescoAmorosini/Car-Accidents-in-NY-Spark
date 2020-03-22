@@ -1,10 +1,12 @@
 package it.polimi.middleware.spark.car.accidents;
 
-import org.apache.spark.SparkFiles;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.StructType;
+import org.apache.spark.SparkConf;
+import java.io.FileReader;
+import java.io.BufferedReader;
 
 import it.polimi.middleware.spark.utils.LogUtils;
 import it.polimi.middleware.spark.utils.Init;
@@ -17,25 +19,32 @@ public class CarAccidents {
 	public static void main(String[] args) {
 		LogUtils.setLogLevel();
 
-		final String master = args.length > 0 ? args[0] : "local[4]";
-		final String filePath = args.length > 1 ? args[1] : "./";
-
+		final SparkConf conf = new SparkConf();
+		try{
+			BufferedReader br = new BufferedReader(new FileReader("/Users/Moro/Desktop/POLIMI/MiddlewareTechnologiesforDistributedSystems/Progetto/Spark/Car-Accidents-in-NY-Spark/src/main/java/it/polimi/middleware/spark/car/accidents/sparkonfig.conf"));
+			String line;
+			while ((line = br.readLine()) != "") {
+				//System.out.println(line);
+				String[] splitted = line.split("\\s+");
+				conf.set(splitted[0], splitted[1]);
+			}
+			br.close();
+		}catch(Exception e ){System.out.println(e);}
+		
 		final SparkSession spark = SparkSession
 				.builder() 
-				.master("spark://Lim1.homenet.telecomitalia.it:7077")
 				.appName("Car Accidents in New York")
+				.config(conf)
 				.getOrCreate();
 
 		final StructType mySchema = Init.getCarAccidentsSchema();
-
-		spark.sparkContext().addFile("file:/Users/simonestaffa/Desktop/MW/Car-Accidents-in-NY-Spark/files/NYPD_Motor_Vehicle_Collisions.csv");
 
 		final long startLoadingDataFromFile = new Date().getTime();
 		final Dataset<Row> ds = spark
 				.read()
 				.option("header", "true")
 				.option("delimiter", ",").option("inferSchema", "false").schema(mySchema)
-				.csv("file:/Users/simonestaffa/Desktop/MW/Car-Accidents-in-NY-Spark/files/NYPD_Motor_Vehicle_Collisions.csv");
+				.csv("file:/Users/Moro/Desktop/POLIMI/MiddlewareTechnologiesforDistributedSystems/Progetto/Spark/Car-Accidents-in-NY-Spark/files/NYPD_Motor_Vehicle_Collisions.csv");
 		final long endLoadingDataFromFile = new Date().getTime();
 		final long loadingDataFromFileTime = endLoadingDataFromFile - startLoadingDataFromFile;
 		//Filtering casualties and injuries mismatch
