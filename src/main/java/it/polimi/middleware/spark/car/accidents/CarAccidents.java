@@ -4,9 +4,6 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.StructType;
-import org.apache.spark.SparkConf;
-import java.io.FileReader;
-import java.io.BufferedReader;
 
 import it.polimi.middleware.spark.utils.LogUtils;
 import it.polimi.middleware.spark.utils.Init;
@@ -18,23 +15,10 @@ import static it.polimi.middleware.spark.utils.Init.*;
 public class CarAccidents {
 	public static void main(String[] args) {
 		LogUtils.setLogLevel();
-
-		final SparkConf conf = new SparkConf();
-		try{
-			BufferedReader br = new BufferedReader(new FileReader("/Users/Moro/Desktop/POLIMI/MiddlewareTechnologiesforDistributedSystems/Progetto/Spark/Car-Accidents-in-NY-Spark/src/main/java/it/polimi/middleware/spark/car/accidents/sparkonfig.conf"));
-			String line;
-			while ((line = br.readLine()) != "") {
-				//System.out.println(line);
-				String[] splitted = line.split("\\s+");
-				conf.set(splitted[0], splitted[1]);
-			}
-			br.close();
-		}catch(Exception e ){System.out.println(e);}
 		
 		final SparkSession spark = SparkSession
 				.builder() 
 				.appName("Car Accidents in New York")
-				.config(conf)
 				.getOrCreate();
 
 		final StructType mySchema = Init.getCarAccidentsSchema();
@@ -44,7 +28,7 @@ public class CarAccidents {
 				.read()
 				.option("header", "true")
 				.option("delimiter", ",").option("inferSchema", "false").schema(mySchema)
-				.csv("file:/Users/Moro/Desktop/POLIMI/MiddlewareTechnologiesforDistributedSystems/Progetto/Spark/Car-Accidents-in-NY-Spark/files/NYPD_Motor_Vehicle_Collisions.csv");
+				.csv(spark.conf().get("spark.files"));
 		final long endLoadingDataFromFile = new Date().getTime();
 		final long loadingDataFromFileTime = endLoadingDataFromFile - startLoadingDataFromFile;
 		//Filtering casualties and injuries mismatch
