@@ -1,5 +1,7 @@
 /target
-/files/NYPD_Motor_Vehicle_Collisions.csv
+/file
+/conf
+/log
 .vscode
 .settings
 .classpath
