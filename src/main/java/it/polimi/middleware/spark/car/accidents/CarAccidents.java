@@ -45,7 +45,7 @@ public class CarAccidents {
 
 		//Q2 Number of accidents and percentage of number of deaths per contributing factor in the dataset.
 		final long startQuery2 = new Date().getTime();
-		second_query(corrected_ds);
+		// second_query(corrected_ds);
 		final long endQuery2 = new Date().getTime();
 		final long query2 = endQuery2 - startQuery2;
 
