@@ -29,7 +29,7 @@ public class CarAccidents {
 				.option("header", "true")
 				.option("delimiter", ",").option("inferSchema", "false").schema(mySchema)
 				.csv(spark.conf().get("spark.files"))
-				.repartition(8).persist();
+				.repartition(8);
 		final long endLoadingDataFromFile = new Date().getTime();
 		final long loadingDataFromFileTime = endLoadingDataFromFile - startLoadingDataFromFile;
 		//Filtering casualties and injuries mismatch
