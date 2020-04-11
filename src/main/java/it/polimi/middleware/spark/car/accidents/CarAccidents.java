@@ -29,13 +29,13 @@ public class CarAccidents {
 				.option("header", "true")
 				.option("delimiter", ",").option("inferSchema", "false").schema(mySchema)
 				.csv(spark.conf().get("spark.files"))
-				.coalesce(24);
+				.repartition(8);
 		final long endLoadingDataFromFile = new Date().getTime();
 		final long loadingDataFromFileTime = endLoadingDataFromFile - startLoadingDataFromFile;
 		//Filtering casualties and injuries mismatch
 		Dataset<Row> corrected_ds = Init.clearIncorrectValues(ds);
 		corrected_ds.printSchema();
-		corrected_ds.cache();
+		// corrected_ds.cache();
 
 		//Q1 Number of lethal accidents per week throughout the entire dataset
 		final long startQuery1 = new Date().getTime();
