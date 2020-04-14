@@ -71,8 +71,20 @@ public class Init {
 		final Dataset<Row> ds_corrected = ds_with_correct_nums
 				.filter(ds_with_correct_nums.col("FAKETOTAL_I").equalTo(ds_with_correct_nums.col("TOTAL_INJURED"))
 						.and(ds_with_correct_nums.col("FAKETOTAL_K").equalTo(ds_with_correct_nums.col("TOTAL_KILLED"))))
-				.drop(ds_with_correct_nums.col("FAKETOTAL_K"))
-				.drop(ds_with_correct_nums.col("FAKETOTAL_I"));
+				.drop(ds_with_correct_nums.col("TIME"))
+				.drop(ds_with_correct_nums.col("ZIP CODE"))
+				.drop(ds_with_correct_nums.col("LATITUDE"))
+				.drop(ds_with_correct_nums.col("LONGITUDE"))
+				.drop(ds_with_correct_nums.col("LOCATION"))
+				.drop(ds_with_correct_nums.col("ON STREET NAME"))
+				.drop(ds_with_correct_nums.col("CROSS STREET NAME"))
+				.drop(ds_with_correct_nums.col("OFF STREET NAME"))
+				.drop(ds_with_correct_nums.col("VEHICLE TYPE CODE 1"))
+				.drop(ds_with_correct_nums.col("VEHICLE TYPE CODE 2"))
+				.drop(ds_with_correct_nums.col("VEHICLE TYPE CODE 3"))
+				.drop(ds_with_correct_nums.col("VEHICLE TYPE CODE 4"))
+				.drop(ds_with_correct_nums.col("VEHICLE TYPE CODE 5"));
+
 
 		return ds_corrected;
 	}
@@ -124,10 +136,8 @@ public class Init {
 				.withColumnRenamed("CONTRIBUTING FACTOR VEHICLE 5", "CONTRIBUTING FACTOR");
 
 		Dataset<Row> ds_all_causes = ds_cause1.union(ds_cause2).union(ds_cause3).union(ds_cause4).union(ds_cause5).dropDuplicates()
-				.withColumn("IS_LETHAL", col("sum(TOTAL_KILLED)").gt(0).cast(DataTypes.IntegerType));
-
-		Dataset<Row> ds_count_causes = ds_all_causes
-				.groupBy(ds_all_causes.col("CONTRIBUTING FACTOR"))
+				.withColumn("IS_LETHAL", col("sum(TOTAL_KILLED)").gt(0).cast(DataTypes.IntegerType))
+				.groupBy(col("CONTRIBUTING FACTOR"))
 				.agg(sum("sum(TOTAL_KILLED)"), count("UNIQUE KEY"),
 						sum("IS_LETHAL"))
 				.withColumnRenamed("sum(sum(TOTAL_KILLED))", "TOTAL_KILLED")
@@ -135,7 +145,7 @@ public class Init {
 				.withColumnRenamed("sum(IS_LETHAL)", "LETHAL_ACCIDENTS")
 				.withColumn("%LETHAL", format_number(expr("LETHAL_ACCIDENTS / TOTAL_ACCIDENTS"),2));
 
-		ds_count_causes.show(50, true);
+		ds_all_causes.show(30, true);
 		return ds;
 	}
 

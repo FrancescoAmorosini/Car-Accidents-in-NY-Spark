@@ -29,14 +29,14 @@ public class CarAccidents {
                 .option("header", "true")
                 .option("delimiter", ",").option("inferSchema", "false").schema(mySchema)
                 .csv(spark.conf().get("spark.files"))
-                .repartition(8);
+                .repartition(8)
+                .persist();
         final long endLoadingDataFromFile = new Date().getTime();
         final long loadingDataFromFileTime = endLoadingDataFromFile - startLoadingDataFromFile;
         //Filtering casualties and injuries mismatch
         Dataset<Row> corrected_ds = Init.clearIncorrectValues(ds);
         corrected_ds.printSchema();
         corrected_ds.repartition(8);
-        ds.unpersist();
         corrected_ds.persist();
         // corrected_ds.cache();
 
