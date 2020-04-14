@@ -6,3 +6,5 @@
 .settings
 .classpath
 .project
+files/NYPD_Motor_Vehicle_Collisions.csv
+conf/spark-defaults.conf
