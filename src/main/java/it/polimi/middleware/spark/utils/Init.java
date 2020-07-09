@@ -143,7 +143,7 @@ public class Init {
 				.withColumnRenamed("sum(sum(NUMBER OF PERSONS KILLED))", "NUMBER OF PERSONS KILLED")
 				.withColumnRenamed("count(UNIQUE KEY)", "TOTAL_ACCIDENTS")
 				.withColumnRenamed("sum(IS_LETHAL)", "LETHAL_ACCIDENTS")
-				.withColumn("%LETHAL", format_number(expr("LETHAL_ACCIDENTS / TOTAL_ACCIDENTS"),2));
+				.withColumn("%LETHAL", format_number(expr("(LETHAL_ACCIDENTS / TOTAL_ACCIDENTS) * 100"),2));
 
 		ds_all_causes.show(30, true);
 		return ds;
