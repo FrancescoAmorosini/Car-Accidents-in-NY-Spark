@@ -164,7 +164,7 @@ public class Init {
 				.withColumnRenamed("count(UNIQUE KEY)", "TOTAL_ACCIDENTS")
 				.withColumnRenamed("sum(IS_LETHAL)", "LETHAL_ACCIDENTS")
 				.withColumnRenamed("avg(IS_LETHAL)", "AVG_LETHAL_ACCIDENTS")
-				.withColumn("AVG_LETHAL_ACCIDENTS", format_number(expr("avg(IS_LETHAL) * 100"),2));
+				.withColumn("AVG_LETHAL_ACCIDENTS_2", format_number(expr("(LETHAL_ACCIDENTS / TOTAL_ACCIDENTS) * 100"),2));
 
 
 		ds_lethal_per_week.orderBy(ds_lethal_per_week.col("YEAR").asc(), ds_lethal_per_week.col("WEEK").asc()).show(50, true);
