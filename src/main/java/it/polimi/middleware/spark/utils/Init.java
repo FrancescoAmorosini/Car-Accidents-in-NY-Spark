@@ -159,11 +159,11 @@ public class Init {
 				.withColumn("YEAR", year(to_date(ds_lethal.col("DATE"), "MM/dd/yyyy")))
 				.withColumn("IS_LETHAL", col("NUMBER OF PERSONS KILLED").cast(DataTypes.IntegerType))
 				.groupBy("BOROUGH","YEAR", "WEEK")
-				.agg(sum("NUMBER OF PERSONS KILLED"), count("UNIQUE KEY"), sum("IS_LETHAL"), avg("IS_LETHAL"))
+				.agg(sum("NUMBER OF PERSONS KILLED"), count("UNIQUE KEY"), sum("IS_LETHAL"))
 				.withColumnRenamed("sum(NUMBER OF PERSONS KILLED)", "TOTAL_KILLED")
 				.withColumnRenamed("count(UNIQUE KEY)", "TOTAL_ACCIDENTS")
 				.withColumnRenamed("sum(IS_LETHAL)", "LETHAL_ACCIDENTS")
-				.withColumnRenamed("avg(IS_LETHAL)", "AVG_LETHAL_ACCIDENTS");
+				.withColumn("%LETHAL", format_number(expr("(LETHAL_ACCIDENTS / TOTAL_ACCIDENTS) * 100"),2));
 
 		ds_lethal_per_week.orderBy(ds_lethal_per_week.col("YEAR").asc(), ds_lethal_per_week.col("WEEK").asc()).show(50, true);
 		return ds;
