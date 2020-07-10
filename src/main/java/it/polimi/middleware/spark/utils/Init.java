@@ -178,7 +178,8 @@ public class Init {
 				drop(ds_lethal_avg_per_week.col("SUM_LETHAL_ACCIDENTS"))
 				.drop(ds_lethal_avg_per_week.col("TOTAL_WEEKS"))
 				.drop(ds_lethal_avg_per_week.col("MAX_YEAR"))
-				.drop(ds_lethal_avg_per_week.col("MIN_YEAR"));
+				.drop(ds_lethal_avg_per_week.col("MIN_YEAR"))
+				.drop(ds_lethal_avg_per_week.col("NUM_YEARS"));
 
 		ds_lethal_per_week.join(ds_lethal_avg_per_week, "BOROUGH")
 				.orderBy(ds_lethal_per_week.col("YEAR").asc(), ds_lethal_per_week.col("WEEK").asc()).show(50, true);
