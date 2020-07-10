@@ -173,9 +173,9 @@ public class Init {
 				.withColumnRenamed("max(YEAR)", "MAX_YEAR")
 				.withColumnRenamed("min(YEAR)", "MIN_YEAR")
 				.withColumn("NUM_YEARS", expr("MAX_YEAR - MIN_YEAR"))
-				.withColumn("%LETHAL PER WEEK", format_number(expr("(SUM_LETHAL_ACCIDENTS / (TOTAL_WEEKS*NUM_YEARS)) * 100"),2));
+				.withColumn("AVG LETHAL PER WEEK", format_number(expr("(SUM_LETHAL_ACCIDENTS / (TOTAL_WEEKS*NUM_YEARS))"),2));
 
-		ds_lethal_avg_per_week = ds_lethal_avg_per_week.drop(ds_lethal_avg_per_week.col("SUM_LETHAL_ACCIDENTS")).drop(ds_lethal_avg_per_week.col("SUM_TOTAL_ACCIDENTS"));
+		// ds_lethal_avg_per_week = ds_lethal_avg_per_week.drop(ds_lethal_avg_per_week.col("SUM_LETHAL_ACCIDENTS")).drop(ds_lethal_avg_per_week.col("SUM_TOTAL_ACCIDENTS"));
 
 		ds_lethal_per_week.join(ds_lethal_avg_per_week, "BOROUGH")
 				.orderBy(ds_lethal_per_week.col("YEAR").asc(), ds_lethal_per_week.col("WEEK").asc()).show(50, true);
