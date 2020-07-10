@@ -170,7 +170,9 @@ public class Init {
 				.withColumnRenamed("sum(TOTAL_ACCIDENTS)", "SUM_TOTAL_ACCIDENTS")
 				.withColumnRenamed("sum(LETHAL_ACCIDENTS)", "SUM_LETHAL_ACCIDENTS")
 				.withColumnRenamed("max(WEEK)", "TOTAL_WEEKS")
-				.withColumn("NUM_YEARS", expr("max(YEAR) - min(YEAR)"))
+				.withColumnRenamed("max(YEAR)", "MAX_YEAR")
+				.withColumnRenamed("min(YEAR)", "MIN_YEAR")
+				.withColumn("NUM_YEARS", expr("MAX_YEAR - MIN_YEAR"))
 				.withColumn("%LETHAL PER WEEK", format_number(expr("(SUM_LETHAL_ACCIDENTS / (TOTAL_WEEKS*NUM_YEARS)) * 100"),2));
 
 		ds_lethal_avg_per_week = ds_lethal_avg_per_week.drop(ds_lethal_avg_per_week.col("SUM_LETHAL_ACCIDENTS")).drop(ds_lethal_avg_per_week.col("SUM_TOTAL_ACCIDENTS"));
