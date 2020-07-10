@@ -165,16 +165,14 @@ public class Init {
 				.withColumnRenamed("sum(IS_LETHAL)", "LETHAL_ACCIDENTS");
 
 		final Dataset<Row> ds_lethal_avg_per_week = ds_lethal_per_week
-				.withColumn("BOROUGH", ds_lethal_per_week.col("BOROUGH"))
-				.withColumn("TOTAL_ACCIDENTS", ds_lethal_per_week.col("TOTAL_ACCIDENTS"))
-				.withColumn("LETHAL_ACCIDENTS", ds_lethal_per_week.col("LETHAL_ACCIDENTS"))
 				.groupBy("BOROUGH")
 				.agg(sum("LETHAL_ACCIDENTS"), sum("TOTAL_ACCIDENTS"))
-				.withColumnRenamed("sum(TOTAL_ACCIDENTS)", "TOTAL_ACCIDENTS")
-				.withColumnRenamed("sum(LETHAL_ACCIDENTS)", "LETHAL_ACCIDENTS")
-				.withColumn("%LETHAL PER WEEK", format_number(expr("(LETHAL_ACCIDENTS / TOTAL_ACCIDENTS) * 100"),2));
-
-		ds_lethal_per_week.join(ds_lethal_avg_per_week, "BOROUGH").orderBy(ds_lethal_per_week.col("YEAR").asc(), ds_lethal_per_week.col("WEEK").asc()).show(50, true);
+				.withColumnRenamed("sum(TOTAL_ACCIDENTS)", "SUM_TOTAL_ACCIDENTS")
+				.withColumnRenamed("sum(LETHAL_ACCIDENTS)", "SUM_LETHAL_ACCIDENTS")
+				.withColumn("%LETHAL PER WEEK", format_number(expr("(SUM_LETHAL_ACCIDENTS / SUM_TOTAL_ACCIDENTS) * 100"),2));
+		ds_lethal_avg_per_week.drop(ds_lethal_avg_per_week.col("SUM_LETHAL_ACCIDENTS")).drop(ds_lethal_avg_per_week.col("SUM_TOTAL_ACCIDENTS"));
+		ds_lethal_per_week.join(ds_lethal_avg_per_week, "BOROUGH")
+				.orderBy(ds_lethal_per_week.col("YEAR").asc(), ds_lethal_per_week.col("WEEK").asc()).show(50, true);
 		return ds;
 	}
 }
