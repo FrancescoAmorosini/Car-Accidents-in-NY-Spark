@@ -21,7 +21,7 @@ From the main folder of the project (where the pom.xml file is located)
 From the Spark main folder
 - ./bin/spark-submit --class main.class.you.want.to.run /path/to/generated/jar <args>
 - ./bin/spark-submit --class it.polimi.middleware.spark.car.accidents.CarAccidents ./target/spark_tutorial-1.jar
-- spark-submit --class it.polimi.middleware.spark.car.accidents.CarAccidents ./target/spark_tutorial-1.jar --master spark://54.175.123.187:7077
+- spark-submit --class it.polimi.middleware.spark.car.accidents.CarAccidents ./target/car_accidents_spark-1.jar --master spark://52.86.48.161:7077
 ### Check the execution
 
 From you browser

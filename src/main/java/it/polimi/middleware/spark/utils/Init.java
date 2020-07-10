@@ -165,6 +165,9 @@ public class Init {
 				.withColumnRenamed("sum(IS_LETHAL)", "LETHAL_ACCIDENTS");
 
 		final Dataset<Row> ds_lethal_avg_per_week = ds_lethal_per_week
+				.withColumn("BOROUGH", ds_lethal_per_week.col("BOROUGH"))
+				.withColumn("TOTAL_ACCIDENTS", ds_lethal_per_week.col("TOTAL_ACCIDENTS"))
+				.withColumn("LETHAL_ACCIDENTS", ds_lethal_per_week.col("LETHAL_ACCIDENTS"))
 				.groupBy("BOROUGH")
 				.agg(sum("LETHAL_ACCIDENTS"), sum("TOTAL_ACCIDENTS"))
 				.withColumn("%LETHAL PER WEEK", format_number(expr("(LETHAL_ACCIDENTS / TOTAL_ACCIDENTS) * 100"),2));
