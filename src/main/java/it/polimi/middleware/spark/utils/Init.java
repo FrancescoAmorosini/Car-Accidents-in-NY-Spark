@@ -162,10 +162,14 @@ public class Init {
 				.agg(sum("NUMBER OF PERSONS KILLED"), count("UNIQUE KEY"), sum("IS_LETHAL"))
 				.withColumnRenamed("sum(NUMBER OF PERSONS KILLED)", "TOTAL_KILLED")
 				.withColumnRenamed("count(UNIQUE KEY)", "TOTAL_ACCIDENTS")
-				.withColumnRenamed("sum(IS_LETHAL)", "LETHAL_ACCIDENTS")
-				.withColumn("%LETHAL", format_number(expr("(LETHAL_ACCIDENTS / TOTAL_ACCIDENTS) * 100"),2));
+				.withColumnRenamed("sum(IS_LETHAL)", "LETHAL_ACCIDENTS");
 
-		ds_lethal_per_week.orderBy(ds_lethal_per_week.col("YEAR").asc(), ds_lethal_per_week.col("WEEK").asc()).show(50, true);
+		final Dataset<Row> ds_lethal_avg_per_week = ds_lethal_per_week
+				.groupBy("BOROUGH")
+				.agg(sum("LETHAL_ACCIDENTS"), sum("TOTAL_ACCIDENTS"))
+				.withColumn("%LETHAL PER WEEK", format_number(expr("(LETHAL_ACCIDENTS / TOTAL_ACCIDENTS) * 100"),2));
+
+		ds_lethal_per_week.join(ds_lethal_avg_per_week, "BOROUGH").orderBy(ds_lethal_per_week.col("YEAR").asc(), ds_lethal_per_week.col("WEEK").asc()).show(50, true);
 		return ds;
 	}
 }
