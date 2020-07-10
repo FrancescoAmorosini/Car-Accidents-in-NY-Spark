@@ -164,13 +164,16 @@ public class Init {
 				.withColumnRenamed("count(UNIQUE KEY)", "TOTAL_ACCIDENTS")
 				.withColumnRenamed("sum(IS_LETHAL)", "LETHAL_ACCIDENTS");
 
-		final Dataset<Row> ds_lethal_avg_per_week = ds_lethal_per_week
+		Dataset<Row> ds_lethal_avg_per_week = ds_lethal_per_week
 				.groupBy("BOROUGH")
-				.agg(sum("LETHAL_ACCIDENTS"), sum("TOTAL_ACCIDENTS"))
+				.agg(sum("LETHAL_ACCIDENTS"), sum("TOTAL_ACCIDENTS"), max("WEEK"))
 				.withColumnRenamed("sum(TOTAL_ACCIDENTS)", "SUM_TOTAL_ACCIDENTS")
 				.withColumnRenamed("sum(LETHAL_ACCIDENTS)", "SUM_LETHAL_ACCIDENTS")
-				.withColumn("%LETHAL PER WEEK", format_number(expr("(SUM_LETHAL_ACCIDENTS / SUM_TOTAL_ACCIDENTS) * 100"),2));
-		ds_lethal_avg_per_week.drop(ds_lethal_avg_per_week.col("SUM_LETHAL_ACCIDENTS")).drop(ds_lethal_avg_per_week.col("SUM_TOTAL_ACCIDENTS"));
+				.withColumnRenamed("max(WEEK)", "TOTAL_WEEKS")
+				.withColumn("%LETHAL PER WEEK", format_number(expr("(SUM_LETHAL_ACCIDENTS / TOTAL_WEEKS) * 100"),2));
+
+		ds_lethal_avg_per_week = ds_lethal_avg_per_week.drop(ds_lethal_avg_per_week.col("SUM_LETHAL_ACCIDENTS")).drop(ds_lethal_avg_per_week.col("SUM_TOTAL_ACCIDENTS"));
+
 		ds_lethal_per_week.join(ds_lethal_avg_per_week, "BOROUGH")
 				.orderBy(ds_lethal_per_week.col("YEAR").asc(), ds_lethal_per_week.col("WEEK").asc()).show(50, true);
 		return ds;
