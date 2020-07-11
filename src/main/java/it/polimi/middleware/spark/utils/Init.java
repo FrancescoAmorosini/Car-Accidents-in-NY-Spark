@@ -159,8 +159,7 @@ public class Init {
 				.withColumn("YEAR", year(to_date(ds_lethal.col("DATE"), "MM/dd/yyyy")))
 				.withColumn("IS_LETHAL", col("NUMBER OF PERSONS KILLED").cast(DataTypes.IntegerType))
 				.groupBy("BOROUGH","YEAR", "WEEK")
-				.agg(sum("NUMBER OF PERSONS KILLED"), count("UNIQUE KEY"), sum("IS_LETHAL"))
-				.withColumnRenamed("sum(NUMBER OF PERSONS KILLED)", "TOTAL_KILLED")
+				.agg(count("UNIQUE KEY"), sum("IS_LETHAL"))
 				.withColumnRenamed("count(UNIQUE KEY)", "TOTAL_ACCIDENTS")
 				.withColumnRenamed("sum(IS_LETHAL)", "LETHAL_ACCIDENTS");
 
