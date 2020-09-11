@@ -27,3 +27,6 @@ From the Spark main folder
 From you browser
 - 127.0.0.1:8080
 - 127.0.0.1:18080 (history server)
+
+#### Note
+The same project has also been developed using [OpenMPI](https://github.com/simonestaffa/mw-open-mpi).
